@@ -1,0 +1,4 @@
+datamodel.graphql is for PRISMA BACKEND
+prisma.graphql is the generated file
+schema.graphql is public facing api which selectively reveals the graphql Prisma endpoints or Data
+

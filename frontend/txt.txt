@@ -1,0 +1,2 @@
+Apollo Client is actually a database in the Client side
+
