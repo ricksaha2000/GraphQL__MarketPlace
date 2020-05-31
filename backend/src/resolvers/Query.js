@@ -1,5 +1,5 @@
 const {forwardTo} = require('prisma-binding');
-const {hasPermissions} = require('../utils');
+const {hasPermission} = require('../utils');
 
 const Query = {
 //shorthand for dogs:function(){}
@@ -34,10 +34,10 @@ async users(parent, args, ctx , info){
     }
 
     //Check if user has the permissions to query all the users
-    hasPermissions(ctx.request.user,['ADMIN','PERMISSIONUPDATE']);
+    hasPermission(ctx.request.user,['ADMIN','PERMISSIONUPDATE']);
     //if they do,query the users ffs
     //pass {} --> emptyware obj to query out all
-    return ctx.db.users({} ,info);
+    return ctx.db.query.users({} ,info);
 
 
 }

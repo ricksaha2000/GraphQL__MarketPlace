@@ -1,14 +1,14 @@
 import PleaseSignIn from '../components/PleaseSignIn';
+import Permissions from '../components/Permission';
 
 
-const Permissions = props =>(
+const PermissionsPage = props =>(
 
     <div>
         <PleaseSignIn>
-
-    <p></p>
+            <Permissions />
         </PleaseSignIn>
     </div>
 );
 
-export default Permissions;
+export default PermissionsPage;

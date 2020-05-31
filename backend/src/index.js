@@ -41,6 +41,27 @@ server.express.use((req,res,next) =>{
         next();
 
 });
+//create a middleware that populates the user on each request
+
+server.express.use(async (req,res,next) =>{
+
+    //if user not logged in,skip
+
+
+
+    if(!req.userId) return next();
+
+    const user = await db.query.user({
+        where:{
+            id:req.userId
+              }
+    },'{id,permissions,email,name}');
+    //thus we are putting the logged in user to the cookie user and thus
+    //application will know this on every load
+    req.user = user;
+    next();
+
+});
 
 //Start the server
 server.start({

@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const {randomBytes} = require('crypto');
 const { promisify } = require('util');
+const {hasPermission} = require('../utils');
+
 const {transport,makeANiceEmail} = require('../mail');
 const Mutations = {
 //so this createItem return a promise ,so to store the value in item,
@@ -48,16 +50,31 @@ const Mutations = {
     },
 
     async deleteItem(parent, args, ctx , info){
-
+        // throw new Error('You Arent Allowed');
         const where = {id:args.id};
         //find the item
         //generally we pass info , which gets displayed in the frotend after
         //the query or mutation is performed, but as this is an
         //intermediary, hence we customize the info
-        const item = await ctx.db.query.item({where},`{id title}`);
+        //also user {id} --> thats required as we require to access the user for further TODO
+        const item = await ctx.db.query.item({where},`{id title user {id}}`);
 
         //Check if the user owns the item
         //Delete It
+         const ownsItem = item.user.id === ctx.request.userId;
+         //check if at least one of the user permission matches with the required
+         //loops over user permission array...suppose ['USER','ITEMDELETE'],
+         //in the first run, permission=USER , it would return false,
+         //second run ,permission=ITEMDELETE,it would return True,
+         //and hasPermission would be True...
+
+         const hasPermissions = ctx.request.user.permissions.some(
+             permission=>['ADMIN','ITEMDELETE'].includes(permission)
+         );
+         if(!ownsItem && !hasPermissions){
+             throw new Error('You dont have Permissions Bruh!!')
+         }
+
         //Finally deleting the specified item after checking perms and returning the desired info
 
         return ctx.db.mutation.deleteItem({where},info);
@@ -226,7 +243,40 @@ async requestReset(parent, args, ctx, info) {
 
         //DONEZOOO
 
-    }
+    },
+
+    async updatePermissions(parent, args, ctx, info) {
+        // 1. Check if they are logged in
+        if (!ctx.request.userId) {
+          throw new Error('You must be logged in!');
+        }
+        // 2. Query the current user
+        const currentUser = await ctx.db.query.user(
+          {
+            where: {
+              id: ctx.request.userId,
+            },
+          },
+          info
+        );
+        // 3. Check if they have permissions to do this
+        hasPermission(currentUser, ['ADMIN', 'PERMISSIONUPDATE']);
+        // 4. Update the permissions
+        return ctx.db.mutation.updateUser(
+          {
+            data: {
+              permissions: {
+                set: args.permissions,
+              },
+            },
+            where: {
+              id: args.userId,
+            },
+          },
+          info
+        );
+      },
+
 
 
 };

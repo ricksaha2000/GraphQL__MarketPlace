@@ -4,6 +4,8 @@ import gql from 'graphql-tag';
 import Form from './styles/Form';
 import Error from './ErrorMessage';
 import {CURRENT_USER_QUERY} from './User';
+import {UPDATE_PERMISSIONS_MUTATION} from './Permission';
+
 const SIGNIN_MUTATION = gql`
 
     mutation SIGNIN_MUTATION($email:String!,
@@ -37,7 +39,7 @@ class SignIn extends Component {
     render() {
         return (
             <Mutation
-            refetchQueries={[{query:CURRENT_USER_QUERY}]}
+            refetchQueries={[{query:CURRENT_USER_QUERY,UPDATE_PERMISSIONS_MUTATION}]}
             mutation={SIGNIN_MUTATION}
             variables={this.state}>
                 {(signin,{error,loading})=>{

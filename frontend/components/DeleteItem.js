@@ -41,7 +41,10 @@ class DeleteItem extends Component {
                 <button onClick={() =>{
                     if(confirm('Are you sure u want to delete?'))
                     {
-                        deleteItem();
+                        //it's a promise , so we can catch the error
+                        deleteItem().catch(err =>{
+                            alert(err.message);
+                        });
                     }
                 }}>
                     {this.props.children}

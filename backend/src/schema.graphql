@@ -37,6 +37,9 @@ resetPassword(resetToken:String!,
 password:String!,
 confirmPassword:String!): User!
 
+updatePermissions(permissions: [Permission], userId: ID!): User
+
+
 }
 type Query{
     items(where:ItemWhereInput ,
